@@ -37,9 +37,9 @@ void Parser::procesar_operandos_binarios(InstruccionPrograma& instruccion, istri
     if (es_numero(operacion2)) {
         instruccion.usar_numero_inmediato = true;
         instruccion.numero_inmediato = std::stoi(operacion2);
-    } else {
-        instruccion.registro_origen = buscar_registro(operacion2);
     }
+    else
+        instruccion.registro_origen = buscar_registro(operacion2);
 }
 
 void Parser::procesar_operandos_memoria(InstruccionPrograma& instruccion, istringstream& iss, bool es_load) {
