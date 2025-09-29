@@ -18,8 +18,8 @@ class MotorSimulacion {
         MotorSimulacion();
         void cargar_programa(const string& nombre_archivo);
         void siguiente_paso();
-        [[nodiscard]] string obtener_estado() const;
         void reiniciar();
+        [[nodiscard]] string obtener_estado() const;
         [[nodiscard]] bool esta_ejecutando() const;
 
     private:
