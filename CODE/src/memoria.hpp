@@ -2,10 +2,13 @@
 #include "../include/tipos.hpp"
 
 class Memoria {
-public:
-    Palabra leer_palabra(Direccion direccion) const;
-    void escribir_palabra(Direccion direccion, Palabra valor);
+    public:
+        Byte memoria[1024]{};
 
-    Byte leer_byte(Direccion direccion) const;
-    void escribir_byte(Direccion direccion, Byte valor);
+        Memoria();
+
+        [[nodiscard]] Numero leer_numero(Direccion direccion) const;
+        void escribir_numero(Direccion direccion, Numero numero);
+        [[nodiscard]] Byte leer_byte(Direccion direccion) const;
+        void escribir_byte(Direccion direccion, Byte valor);
 };

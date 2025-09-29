@@ -1,24 +1,33 @@
 #pragma once
-#include "../include/tipos.hpp"
 #include "parser.hpp"
-#include "estado_cpu.hpp"
+#include "cpu.hpp"
 #include "memoria.hpp"
 #include <vector>
 #include <string>
 
+using std::string;
+using std::vector;
+
 class MotorSimulacion {
-private:
-    EstadoCPU cpu;
-    Memoria memoria;
-    std::vector<InstruccionPrograma> programa;
-    bool ejecutando;
+    public:
+        CPU cpu;
+        Memoria memoria;
+        vector<InstruccionPrograma> programa;
+        bool ejecutando{false};
 
-public:
-    MotorSimulacion();
+        MotorSimulacion();
+        void cargar_programa(const string& nombre_archivo);
+        void siguiente_paso();
+        [[nodiscard]] string obtener_estado() const;
+        void reiniciar();
+        [[nodiscard]] bool esta_ejecutando() const;
 
-    void cargar_programa(const std::string& nombre_archivo);
-    void paso();
-    std::string obtener_estado() const;
-    void reiniciar();
-    bool esta_ejecutando() const;
+    private:
+        void ejecutarInstruccion(const InstruccionPrograma& instruccion);
+        void ejecutarMov(const InstruccionPrograma& instruccion);
+        void ejecutarAdd(const InstruccionPrograma& instruccion);
+        void ejecutarSub(const InstruccionPrograma& instruccion);
+        void ejecutarJmp(const InstruccionPrograma& instruccion);
+        void ejecutarLoad(const InstruccionPrograma& instruccion);
+        void ejecutarStore(const InstruccionPrograma& instruccion);
 };

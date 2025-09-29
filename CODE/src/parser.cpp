@@ -1,42 +1,115 @@
 #include "parser.hpp"
+#include <fstream>
+#include <sstream>
+#include <algorithm>
+#include <unordered_map>
 
-InstruccionPrograma::InstruccionPrograma() {
-    tipo = Instruccion::NOP;
-    registro_destino = Registro::EAX;
-    registro_origen = Registro::EAX;
-    valor_inmediato = 0;
-    direccion_memoria = 0;
-    usar_valor_inmediato = false;
-    usar_direccion_memoria = false;
+Registro Parser::buscar_registro(const string& registro) {
+    static const std::unordered_map<string, Registro> registros = {
+        {"EAX", Registro::EAX}, {"eax", Registro::EAX},
+        {"EBX", Registro::EBX}, {"ebx", Registro::EBX},
+        {"ECX", Registro::ECX}, {"ecx", Registro::ECX},
+        {"EDX", Registro::EDX}, {"edx", Registro::EDX},
+        {"ESP", Registro::ESP}, {"esp", Registro::ESP},
+        {"EBP", Registro::EBP}, {"ebp", Registro::EBP},
+        {"ESI", Registro::ESI}, {"esi", Registro::ESI},
+        {"EDI", Registro::EDI}, {"edi", Registro::EDI}
+    };
+
+    if (const auto it = registros.find(registro); it != registros.end())
+        return it->second;
+
+    return Registro::EAX;
 }
 
-InstruccionPrograma Parser::analizar_linea(const std::string& linea) {
+bool Parser::es_numero(const string& texto) {
+    return !texto.empty() && std::ranges::all_of(texto, ::isdigit);
+}
+
+void Parser::procesar_operandos_binarios(InstruccionPrograma& instruccion, istringstream& iss) {
+    string operacion1, operacion2;
+    iss >> operacion1 >> operacion2;
+
+    if (!operacion1.empty() && operacion1.back() == ',') operacion1.pop_back();
+
+    instruccion.registro_destino = buscar_registro(operacion1);
+
+    if (es_numero(operacion2)) {
+        instruccion.usar_numero_inmediato = true;
+        instruccion.numero_inmediato = std::stoi(operacion2);
+    } else {
+        instruccion.registro_origen = buscar_registro(operacion2);
+    }
+}
+
+void Parser::procesar_operandos_memoria(InstruccionPrograma& instruccion, istringstream& iss, bool es_load) {
+    string registro, direccion;
+    iss >> registro >> direccion;
+
+    if (!registro.empty() && registro.back() == ',') registro.pop_back();
+
+    if (es_load) instruccion.registro_destino = buscar_registro(registro);
+    else instruccion.registro_origen = buscar_registro(registro);
+
+    instruccion.usar_direccion_memoria = true;
+    instruccion.direccion_memoria = std::stoi(direccion);
+}
+
+InstruccionPrograma Parser::analizar_linea(const string& linea) {
     InstruccionPrograma instruccion;
 
-    if (linea.empty()) return instruccion;
+    if (linea.empty() || linea[0] == ';') return instruccion;
 
-    if (linea.find("MOV") != std::string::npos)
-        instruccion.tipo = Instruccion::MOV;
+    std::istringstream iss(linea);
+    string comando;
+    iss >> comando;
 
-    else if (linea.find("ADD") != std::string::npos)
-        instruccion.tipo = Instruccion::ADD;
+    std::ranges::transform(comando, comando.begin(), ::toupper);
 
-    else if (linea.find("SUB") != std::string::npos)
-        instruccion.tipo = Instruccion::SUB;
-
-    else if (linea.find("JMP") != std::string::npos)
-        instruccion.tipo = Instruccion::JMP;
-
-    else if (linea.find("LOAD") != std::string::npos)
-        instruccion.tipo = Instruccion::LOAD;
-
-    else if (linea.find("STORE") != std::string::npos)
-        instruccion.tipo = Instruccion::STORE;
+    if (comando == "MOV") {
+        instruccion.tipo = Comando::MOV;
+        procesar_operandos_binarios(instruccion, iss);
+    }
+    else if (comando == "ADD") {
+        instruccion.tipo = Comando::ADD;
+        procesar_operandos_binarios(instruccion, iss);
+    }
+    else if (comando == "SUB") {
+        instruccion.tipo = Comando::SUB;
+        procesar_operandos_binarios(instruccion, iss);
+    }
+    else if (comando == "JMP") {
+        instruccion.tipo = Comando::JMP;
+        string destino;
+        iss >> destino;
+        instruccion.usar_numero_inmediato = true;
+        instruccion.numero_inmediato = std::stoi(destino);
+    }
+    else if (comando == "LOAD") {
+        instruccion.tipo = Comando::LOAD;
+        procesar_operandos_memoria(instruccion, iss, true);
+    }
+    else if (comando == "STORE") {
+        instruccion.tipo = Comando::STORE;
+        procesar_operandos_memoria(instruccion, iss, false);
+    }
 
     return instruccion;
 }
 
-std::vector<InstruccionPrograma> Parser::cargar_programa(const std::string& archivo) {
-    std::vector<InstruccionPrograma> programa;
+vector<InstruccionPrograma> Parser::cargar_programa(const string& nombre_archivo) {
+    vector<InstruccionPrograma> programa;
+    std::ifstream archivo(nombre_archivo);
+
+    if (!archivo.is_open()) return programa;
+
+    string linea;
+    while (std::getline(archivo, linea)) {
+        linea.erase(0, linea.find_first_not_of(" \t"));
+        linea.erase(linea.find_last_not_of(" \t") + 1);
+
+        if (!linea.empty()) programa.push_back(analizar_linea(linea));
+    }
+
     return programa;
 }

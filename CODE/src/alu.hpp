@@ -1,11 +1,11 @@
 #pragma once
 #include "../include/tipos.hpp"
 
-class EstadoCPU;
+class CPU;
 
 class ALU {
-public:
-    static Palabra sumar(Palabra a, Palabra b, EstadoCPU& cpu);
-    static Palabra restar(Palabra a, Palabra b, EstadoCPU& cpu);
-    static void comparar(Palabra a, Palabra b, EstadoCPU& cpu);
+    public:
+        static Numero sumar(Numero a, Numero b, CPU& cpu);
+        static Numero restar(Numero a, Numero b, CPU& cpu);
+        static void comparar(Numero a, Numero b, CPU& cpu);
 };

@@ -1,10 +1,11 @@
 #pragma once
 #include <string>
+using namespace std;
 
-class EstadoCPU;
+class CPU;
 class Memoria;
 
 namespace SalidaJson {
-    std::string serializar_estado(const EstadoCPU& cpu, const Memoria& memoria);
-    void escribir_estado(const EstadoCPU& cpu, const Memoria& memoria, const std::string& nombre_archivo);
+    string serializar_estado(const CPU& cpu, const Memoria& memoria);
+    void escribir_estado(const CPU& cpu, const Memoria& memoria, const std::string& nombre_archivo);
 };
