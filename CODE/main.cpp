@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <cstring>
 #include "src/motor_simulacion.hpp"
 using namespace std;
 
@@ -31,11 +32,14 @@ extern "C" {
         return static_cast<int>(simulador->esta_ejecutando());
     }
 
-    EXPORT const char* obtener_estado() {
-        if (!simulador) return "{}";
-        static string estado;
-        estado = simulador->obtener_estado();
-        return estado.c_str();
+    EXPORT void obtener_estado_buffer(char* buffer, int tamaño) {
+        if (!simulador || !buffer || tamaño <= 0) return;
+        
+        // VERSIÓN REAL RESTAURADA
+        string estado = simulador->obtener_estado();
+        
+        strncpy(buffer, estado.c_str(), tamaño - 1);
+        buffer[tamaño - 1] = '\0';
     }
 
     EXPORT void reiniciar() {
