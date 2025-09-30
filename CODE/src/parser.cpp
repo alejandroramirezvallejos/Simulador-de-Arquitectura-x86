@@ -27,19 +27,19 @@ bool Parser::es_numero(const string& texto) {
 }
 
 void Parser::procesar_operandos_binarios(InstruccionPrograma& instruccion, istringstream& iss) {
-    string operacion1, operacion2;
-    iss >> operacion1 >> operacion2;
+    string operando1, operando2;
+    iss >> operando1 >> operando2;
 
-    if (!operacion1.empty() && operacion1.back() == ',') operacion1.pop_back();
+    if (!operando1.empty() && operando1.back() == ',') operando1.pop_back();
 
-    instruccion.registro_destino = buscar_registro(operacion1);
+    instruccion.registro_destino = buscar_registro(operando1);
 
-    if (es_numero(operacion2)) {
+    if (es_numero(operando2)) {
         instruccion.usar_numero_inmediato = true;
-        instruccion.numero_inmediato = std::stoi(operacion2);
+        instruccion.numero_inmediato = std::stoi(operando2);
     }
     else
-        instruccion.registro_origen = buscar_registro(operacion2);
+        instruccion.registro_origen = buscar_registro(operando2);
 }
 
 void Parser::procesar_operandos_memoria(InstruccionPrograma& instruccion, istringstream& iss, bool es_load) {

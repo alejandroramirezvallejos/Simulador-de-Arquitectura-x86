@@ -1,45 +1,55 @@
 #include <iostream>
 #include <fstream>
+#include <cstring>
 #include "src/motor_simulacion.hpp"
 using namespace std;
 
+#ifdef _WIN32
+    #define EXPORT __declspec(dllexport)
+#elif defined(__GNUC__) && __GNUC__ >= 4
+    #define EXPORT __attribute__((visibility("default")))
+#else
+    #define EXPORT
+#endif
+
 extern "C" {
-    static MotorSimulacion* sim = nullptr;
+    static MotorSimulacion* simulador = nullptr;
 
-    //TODO: Implementar para macOS/Linux "__attribute__((visibility("default")))"
-
-    __declspec(dllexport) int inicializar_simulador() {
-        sim = new MotorSimulacion();
+    EXPORT int inicializar_simulador() {
+        simulador = new MotorSimulacion();
         return 1;
     }
 
-    __declspec(dllexport) int cargar_programa(const char* archivo) {
-        if (!sim) return 0;
-        sim->cargar_programa(string(archivo));
+    EXPORT int cargar_programa(const char* archivo) {
+        if (!simulador) return 0;
+        simulador->cargar_programa(string(archivo));
         return 1;
     }
 
-    __declspec(dllexport) int ejecutar_paso() {
-        if (!sim) return 0;
-        sim->siguiente_paso();
-        return static_cast<int>(sim->esta_ejecutando());
+    EXPORT int ejecutar_paso() {
+        if (!simulador) return 0;
+        simulador->siguiente_paso();
+        return static_cast<int>(simulador->esta_ejecutando());
     }
 
-    __declspec(dllexport) const char* obtener_estado() {
-        if (!sim) return "{}";
-        static string estado;
-        estado = sim->obtener_estado();
-        return estado.c_str();
+    EXPORT void obtener_estado_buffer(char* buffer, int tamaño) {
+        if (!simulador || !buffer || tamaño <= 0) return;
+        
+        // VERSIÓN REAL RESTAURADA
+        string estado = simulador->obtener_estado();
+        
+        strncpy(buffer, estado.c_str(), tamaño - 1);
+        buffer[tamaño - 1] = '\0';
     }
 
-    __declspec(dllexport) void reiniciar() {
-        if (sim) sim->reiniciar();
+    EXPORT void reiniciar() {
+        if (simulador) simulador->reiniciar();
     }
 
-    __declspec(dllexport) void finalizar_simulador() {
-        if (sim) {
-            delete sim;
-            sim = nullptr;
+    EXPORT void finalizar_simulador() {
+        if (simulador) {
+            delete simulador;
+            simulador = nullptr;
         }
     }
 }
@@ -48,7 +58,7 @@ int main() {
     //TODO: Es solo un archivo de ejemplo en la practica se usara Excel con VB
 
     cout << "Simulador de Arquitectura x86\n==============================\n\n";
-    string archivo_asm = "programa_ejemplo.asm";
+    const string archivo_asm = "programa_ejemplo.asm";
     ofstream ejemplo(archivo_asm);
 
     if (!ejemplo.is_open()) {
@@ -88,5 +98,6 @@ int main() {
     }
 
     cout << "Ejecucion completada.\n";
+
     return 0;
 }
