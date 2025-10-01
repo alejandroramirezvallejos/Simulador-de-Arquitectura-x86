@@ -11,4 +11,6 @@ class Memoria {
         void escribir_numero(Direccion direccion, Numero numero);
         [[nodiscard]] Byte leer_byte(Direccion direccion) const;
         void escribir_byte(Direccion direccion, Byte valor);
+        [[nodiscard]] Numero leer(Direccion direccion) const;
+        void escribir(Direccion direccion, Numero valor);
 };

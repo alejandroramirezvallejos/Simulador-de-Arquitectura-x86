@@ -1,7 +1,7 @@
 #include "alu.hpp"
 #include "cpu.hpp"
 
-Numero ALU::sumar(Numero a, Numero b, CPU& cpu) {
+Numero ALU::sumar(const Numero a, const Numero b, CPU& cpu) {
     const Numero resultado = a + b;
 
     cpu.establecer_bandera(Bandera::CERO, resultado == 0);
@@ -11,7 +11,7 @@ Numero ALU::sumar(Numero a, Numero b, CPU& cpu) {
     return resultado;
 }
 
-Numero ALU::restar(Numero a, Numero b, CPU& cpu) {
+Numero ALU::restar(const Numero a, const Numero b, CPU& cpu) {
     const Numero resultado = a - b;
 
     cpu.establecer_bandera(Bandera::CERO, resultado == 0);
@@ -21,7 +21,7 @@ Numero ALU::restar(Numero a, Numero b, CPU& cpu) {
     return resultado;
 }
 
-void ALU::comparar(Numero a, Numero b, CPU& cpu) {
+void ALU::comparar(const Numero a, const Numero b, CPU& cpu) {
     cpu.establecer_bandera(Bandera::CERO, a == b);
     cpu.establecer_bandera(Bandera::ACARREO, a < b);
     cpu.establecer_bandera(Bandera::SIGNO, false);
