@@ -2,7 +2,6 @@
 #include "../include/tipos.hpp"
 #include <string>
 #include <vector>
-#include <sstream>
 
 using std::string;
 using std::vector;

@@ -6,7 +6,7 @@ Memoria::Memoria() {
     std::memset(memoria, 0, sizeof(memoria));
 }
 
-Numero Memoria::leer_numero(Direccion direccion) const {
+Numero Memoria::leer_numero(const Direccion direccion) const {
     if (direccion + 3 >= 1024) return 0;
 
     return memoria[direccion] + (memoria[direccion + 1] * 256)
@@ -14,7 +14,7 @@ Numero Memoria::leer_numero(Direccion direccion) const {
            * 16777216);
 }
 
-void Memoria::escribir_numero(Direccion direccion, Numero numero) {
+void Memoria::escribir_numero(const Direccion direccion, const Numero numero) {
     if (direccion + 3 >= 1024) return;
 
     memoria[direccion] = numero % 256;
@@ -23,12 +23,12 @@ void Memoria::escribir_numero(Direccion direccion, Numero numero) {
     memoria[direccion + 3] = (numero / 16777216) % 256;
 }
 
-Byte Memoria::leer_byte(Direccion direccion) const {
+Byte Memoria::leer_byte(const Direccion direccion) const {
     if (direccion >= 1024) return 0;
     return memoria[direccion];
 }
 
-void Memoria::escribir_byte(Direccion direccion, Byte valor) {
+void Memoria::escribir_byte(const Direccion direccion, const Byte valor) {
     if (direccion >= 1024) return;
     memoria[direccion] = valor;
 }

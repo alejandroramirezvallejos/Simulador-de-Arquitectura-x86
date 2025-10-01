@@ -42,7 +42,7 @@ void Parser::procesar_operandos_binarios(InstruccionPrograma& instruccion, istri
         instruccion.registro_origen = buscar_registro(operando2);
 }
 
-void Parser::procesar_operandos_memoria(InstruccionPrograma& instruccion, istringstream& iss, bool es_load) {
+void Parser::procesar_operandos_memoria(InstruccionPrograma& instruccion, istringstream& iss, const bool es_load) {
     string registro, direccion;
     iss >> registro >> direccion;
 

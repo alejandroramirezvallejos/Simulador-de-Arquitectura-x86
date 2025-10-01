@@ -2,9 +2,9 @@
 #include "parser.hpp"
 #include "cpu.hpp"
 #include "memoria.hpp"
+#include "jerarquia_cache.hpp"
 #include <vector>
 #include <string>
-
 using std::string;
 using std::vector;
 
@@ -12,14 +12,17 @@ class MotorSimulacion {
     public:
         CPU cpu;
         Memoria memoria;
+        JerarquiaCache caches{};
         vector<InstruccionPrograma> programa;
         bool ejecutando{false};
 
-        MotorSimulacion();
+        MotorSimulacion() = default;
+
         void cargar_programa(const string& nombre_archivo);
         void siguiente_paso();
         void reiniciar();
         [[nodiscard]] string obtener_estado() const;
+        [[nodiscard]] auto obtener_estado_con_caches() const -> string;
         [[nodiscard]] bool esta_ejecutando() const;
 
     private:

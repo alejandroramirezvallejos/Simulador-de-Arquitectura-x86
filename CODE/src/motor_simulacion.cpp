@@ -2,8 +2,6 @@
 #include "alu.hpp"
 #include "../include/salida_json.hpp"
 
-MotorSimulacion::MotorSimulacion() = default;
-
 void MotorSimulacion::cargar_programa(const string& nombre_archivo) {
     programa = Parser::cargar_programa(nombre_archivo);
     ejecutando = !programa.empty();
@@ -90,7 +88,7 @@ void MotorSimulacion::ejecutarJmp(const InstruccionPrograma& instruccion) {
 
 void MotorSimulacion::ejecutarLoad(const InstruccionPrograma& instruccion) {
     if (instruccion.usar_direccion_memoria) {
-        const Numero numero = memoria.leer_numero(instruccion.direccion_memoria);
+        const Numero numero = caches.leer(instruccion.direccion_memoria, memoria);
         cpu.establecer_registro(instruccion.registro_destino, numero);
     }
 }
@@ -98,7 +96,7 @@ void MotorSimulacion::ejecutarLoad(const InstruccionPrograma& instruccion) {
 void MotorSimulacion::ejecutarStore(const InstruccionPrograma& instruccion) {
     if (instruccion.usar_direccion_memoria) {
         const Numero numero = cpu.obtener_registro(instruccion.registro_origen);
-        memoria.escribir_numero(instruccion.direccion_memoria, numero);
+        caches.escribir(instruccion.direccion_memoria, numero, memoria);
     }
 }
 
@@ -106,9 +104,14 @@ string MotorSimulacion::obtener_estado() const {
     return SalidaJson::serializar_estado(cpu, memoria);
 }
 
+string MotorSimulacion::obtener_estado_con_caches() const {
+    return SalidaJson::serializar_estado_con_caches(cpu, memoria, caches);
+}
+
 void MotorSimulacion::reiniciar() {
     cpu = CPU();
     memoria = Memoria();
+    caches.invalidar_todos();
     ejecutando = !programa.empty();
 }
 

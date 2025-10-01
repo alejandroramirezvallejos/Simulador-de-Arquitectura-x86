@@ -8,5 +8,8 @@ add_executable(CODE main.cpp
         src/cpu.cpp
         src/alu.cpp
         src/memoria.cpp
+        src/cache.cpp
+        src/jerarquia_cache.cpp
         src/motor_simulacion.cpp
-        src/salida_json.cpp)
+        src/salida_json.cpp
+)

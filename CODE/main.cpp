@@ -2,6 +2,7 @@
 #include <fstream>
 #include <cstring>
 #include "src/motor_simulacion.hpp"
+#include "include/salida_json.hpp"
 using namespace std;
 
 #ifdef _WIN32
@@ -32,13 +33,48 @@ extern "C" {
         return static_cast<int>(simulador->esta_ejecutando());
     }
 
-    EXPORT void obtener_estado_buffer(char* buffer, int tamaño) {
+    EXPORT void obtener_estado_buffer(char* buffer, const int tamaño) {
         if (!simulador || !buffer || tamaño <= 0) return;
         
-        // VERSIÓN REAL RESTAURADA
-        string estado = simulador->obtener_estado();
+        const string estado = simulador->obtener_estado();
         
         strncpy(buffer, estado.c_str(), tamaño - 1);
+        buffer[tamaño - 1] = '\0';
+    }
+
+    EXPORT void obtener_estado_con_caches_buffer(char* buffer, const int tamaño) {
+        if (!simulador || !buffer || tamaño <= 0) return;
+
+        const string estado = simulador->obtener_estado_con_caches();
+
+        strncpy(buffer, estado.c_str(), tamaño - 1);
+        buffer[tamaño - 1] = '\0';
+    }
+
+    EXPORT void obtener_registros_buffer(char* buffer, const int tamaño) {
+        if (!simulador || !buffer || tamaño <= 0) return;
+
+        const string registros = SalidaJson::serializar_registros(simulador->cpu);
+
+        strncpy(buffer, registros.c_str(), tamaño - 1);
+        buffer[tamaño - 1] = '\0';
+    }
+
+    EXPORT void obtener_memoria_buffer(char* buffer, const int tamaño) {
+        if (!simulador || !buffer || tamaño <= 0) return;
+
+        const string memoria = SalidaJson::serializar_memoria(simulador->memoria);
+
+        strncpy(buffer, memoria.c_str(), tamaño - 1);
+        buffer[tamaño - 1] = '\0';
+    }
+
+    EXPORT void obtener_caches_buffer(char* buffer, const int tamaño) {
+        if (!simulador || !buffer || tamaño <= 0) return;
+
+        const string caches = SalidaJson::serializar_caches(simulador->caches);
+
+        strncpy(buffer, caches.c_str(), tamaño - 1);
         buffer[tamaño - 1] = '\0';
     }
 
@@ -57,7 +93,7 @@ extern "C" {
 int main() {
     //TODO: Es solo un archivo de ejemplo en la practica se usara Excel con VB
 
-    cout << "Simulador de Arquitectura x86\n==============================\n\n";
+    cout << "Simulador de Arquitectura x86 con Caches\n=========================================\n\n";
     const string archivo_asm = "programa_ejemplo.asm";
     ofstream ejemplo(archivo_asm);
 
@@ -66,10 +102,14 @@ int main() {
         return 1;
     }
 
-    ejemplo << "MOV EAX, 10\n";
-    ejemplo << "MOV EBX, 20\n";
-    ejemplo << "ADD EAX, EBX\n";
-    ejemplo << "SUB EAX, 5\n";
+    ejemplo << "MOV EAX, 100\n";
+    ejemplo << "STORE EAX, 0\n";
+    ejemplo << "MOV EBX, 200\n";
+    ejemplo << "STORE EBX, 4\n";
+    ejemplo << "LOAD ECX, 0\n";
+    ejemplo << "LOAD EDX, 4\n";
+    ejemplo << "ADD ECX, EDX\n";
+    ejemplo << "STORE ECX, 8\n";
     ejemplo.close();
 
     cout << "Archivo " << archivo_asm << " creado exitosamente.\n\n";
@@ -78,26 +118,24 @@ int main() {
     motor.cargar_programa(archivo_asm);
 
     if (!motor.esta_ejecutando()) {
-        cout << "ERROR: El programa no se cargó correctamente.\n";
+        cout << "ERROR: El programa no se cargo correctamente.\n";
         return 1;
     }
 
     cout << "Programa cargado. Ejecutando paso a paso:\n\n";
-
-    cout << "Estado inicial:\n" << motor.obtener_estado() << "\n\n";
+    cout << "Estado inicial:\n" << motor.obtener_estado_con_caches() << "\n\n";
 
     for (int paso = 1; motor.esta_ejecutando(); ++paso) {
-        cout << "Ejecutando paso " << paso << "...\n";
+        cout << "Ejecutando paso " << paso << '\n';
         motor.siguiente_paso();
-        cout << "Despues del paso " << paso << ":\n" << motor.obtener_estado() << "\n\n";
+        cout << "Despues del paso " << paso << ":\n" << motor.obtener_estado_con_caches() << "\n\n";
 
-        if (paso > 10) {
+        if (paso > 15) {
             cout << "ERROR: Demasiados pasos.\n";
             break;
         }
     }
 
     cout << "Ejecucion completada.\n";
-
     return 0;
 }
