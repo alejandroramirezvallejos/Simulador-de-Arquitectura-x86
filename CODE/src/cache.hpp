@@ -16,23 +16,23 @@ struct EntradaCache {
 
 class Cache {
     public:
-        vector<EntradaCache> entradas;
+        mutable vector<EntradaCache> entradas;
         int tamaño;
-        int contador_acceso{};
         string nombre;
 
-        Cache(int tamaño_cache, string nombre_cache);
+        Cache(int tamaño, string nombre);
 
-        bool buscar(Direccion direccion, Numero& dato);
-        void escribir(Direccion direccion, Numero dato);
-        void invalidar();
-        [[nodiscard]] int calcular_hits() const;
-        [[nodiscard]] int calcular_misses() const;
+        bool buscar(Direccion direccion, Numero& dato) const;
+        void escribir(Direccion direccion, Numero dato) const;
+        void invalidar() const;
+        [[nodiscard]] int calcular_aciertos() const;
+        [[nodiscard]] int calcular_fallos() const;
 
     private:
-        int hits{};
-        int misses{};
+        mutable int aciertos{};
+        mutable int fallos{};
+        mutable int contador_acceso{};
 
         [[nodiscard]] int encontrar_lru() const;
-        void actualizar_lru(int indice);
+        void actualizar_lru(int indice) const;
 };

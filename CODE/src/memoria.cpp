@@ -1,34 +1,40 @@
 #include "memoria.hpp"
 #include <algorithm>
-#include <cstring>
 
 Memoria::Memoria() {
-    std::memset(memoria, 0, sizeof(memoria));
+    std::ranges::fill(memoria, 0);
 }
 
 Numero Memoria::leer_numero(const Direccion direccion) const {
-    if (direccion + 3 >= 1024) return 0;
+    if (direccion + 7 >= 1024) return 0;
 
-    return memoria[direccion] + (memoria[direccion + 1] * 256)
-           + (memoria[direccion + 2] * 65536) + (memoria[direccion + 3]
-           * 16777216);
+    Numero resultado = 0;
+
+    for (int i = 0; i < 8; ++i)
+        resultado |= static_cast<Numero>(memoria[direccion + i]) << (i * 8);
+
+    return resultado;
 }
 
 void Memoria::escribir_numero(const Direccion direccion, const Numero numero) {
-    if (direccion + 3 >= 1024) return;
+    if (direccion + 7 >= 1024) return;
 
-    memoria[direccion] = numero % 256;
-    memoria[direccion + 1] = (numero / 256) % 256;
-    memoria[direccion + 2] = (numero / 65536) % 256;
-    memoria[direccion + 3] = (numero / 16777216) % 256;
+    for (int i = 0; i < 8; ++i)
+        memoria[direccion + i] = static_cast<Byte>((numero >> (i * 8)) & 0xFF);
 }
 
 Byte Memoria::leer_byte(const Direccion direccion) const {
-    if (direccion >= 1024) return 0;
-    return memoria[direccion];
+    return (direccion >= 1024) ? 0 : memoria[direccion];
 }
 
 void Memoria::escribir_byte(const Direccion direccion, const Byte valor) {
-    if (direccion >= 1024) return;
-    memoria[direccion] = valor;
+    if (direccion < 1024) memoria[direccion] = valor;
+}
+
+Numero Memoria::leer(const Direccion direccion) const {
+    return leer_numero(direccion);
+}
+
+void Memoria::escribir(const Direccion direccion, const Numero valor) {
+    escribir_numero(direccion, valor);
 }

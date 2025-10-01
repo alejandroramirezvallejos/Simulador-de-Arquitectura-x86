@@ -12,9 +12,9 @@ class JerarquiaCache {
 
         JerarquiaCache();
 
-        Numero leer(Direccion direccion, const class Memoria& memoria);
-        void escribir(Direccion direccion, Numero dato, Memoria& memoria);
-        void invalidar_todos();
-
+        Numero leer(Direccion direccion, const class Memoria& memoria) const;
+        void escribir(Direccion direccion, Numero dato, Memoria& memoria) const;
+        void invalidar_todos() const;
         [[nodiscard]] string obtener_estadisticas() const;
+        [[nodiscard]] bool contiene(Direccion direccion) const;
 };
