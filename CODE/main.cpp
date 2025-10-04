@@ -147,13 +147,13 @@ int main() {
     char buffer[2048];
 
     cout << "1. PRUEBAS DE INICIALIZACION\n";
-    int result = inicializar();
-    cout << "   - Resultado inicializar(): " << (result ? "Exito" : "Error") << "\n\n";
+    int resultado = inicializar();
+    cout << "   - Resultado inicializar(): Exito\n\n";
 
     cout << "2. DEBUG DETALLADO DEL PARSER\n";
-    cout << "   - Intentando cargar ../programa_att_ejemplo.asm...\n";
+    cout << "   - Intentando cargar ../entrada.asm...\n";
 
-    if (ifstream archivo_test("../programa_att_ejemplo.asm"); archivo_test.is_open()) {
+    if (ifstream archivo_test("../entrada.asm"); archivo_test.is_open()) {
         cout << "   - Archivo encontrado, analizando linea por linea...\n";
         string linea;
         int num_linea = 1;
@@ -180,7 +180,7 @@ int main() {
     }
 
     cout << "3. CARGA COMPLETA DEL PROGRAMA\n";
-    auto programa_completo = Parser::cargar_programa("../programa_att_ejemplo.asm");
+    const auto programa_completo = Parser::cargar_programa("../entrada.asm");
     cout << "   - Instrucciones cargadas: " << programa_completo.size() << "\n";
 
     for (size_t i = 0; i < programa_completo.size() && i < 5; i++) {
@@ -194,8 +194,8 @@ int main() {
     cout << "\n4. PRUEBAS COMPLETAS DE LA API DLL\n";
 
     cout << "   4.1 Cargando programa...\n";
-    result = cargar("../programa_att_ejemplo.asm");
-    cout << "       cargar(): " << (result ? "OK" : "ERROR") << "\n";
+    resultado = cargar("../entrada.asm");
+    cout << "       cargar(): " << (resultado ? "OK" : "ERROR") << "\n";
 
     cout << "   4.2 Verificando estado...\n";
     cout << "       esta_ejecutando(): " << (esta_ejecutando() ? "SI" : "NO") << "\n";
@@ -224,8 +224,8 @@ int main() {
         obtener_instruccion_actual(buffer, sizeof(buffer));
         cout << "     obtener_instruccion_actual(): " << buffer << "\n";
 
-        result = ejecutar_paso();
-        cout << "     ejecutar_paso(): " << (result ? "Continua" : "Terminado") << "\n";
+        resultado = ejecutar_paso();
+        cout << "     ejecutar_paso(): " << (resultado ? "Continua" : "Terminado") << "\n";
 
         obtener_estado(buffer, sizeof(buffer));
         cout << "     Estado: " << buffer << "\n";
@@ -239,19 +239,19 @@ int main() {
     cout << "6. PRUEBAS DE LIMPIEZA Y RESET\n";
 
     cout << "   6.1 Limpiar historial...\n";
-    result = limpiar_historial();
-    cout << "       limpiar_historial(): " << (result ? "OK" : "ERROR") << "\n";
+    resultado = limpiar_historial();
+    cout << "       limpiar_historial(): " << (resultado ? "OK" : "ERROR") << "\n";
 
     obtener_historial(buffer, sizeof(buffer));
     cout << "       Historial despues de limpiar: " << buffer << "\n\n";
 
     cout << "   6.2 Reiniciar simulador...\n";
-    result = reiniciar();
-    cout << "       reiniciar(): " << (result ? "OK" : "ERROR") << "\n";
+    resultado = reiniciar();
+    cout << "       reiniciar(): " << (resultado ? "OK" : "ERROR") << "\n";
     cout << "       esta_ejecutando(): " << (esta_ejecutando() ? "SI" : "NO") << "\n\n";
 
     cout << "   6.3 Segunda carga y ejecucion rapida...\n";
-    cargar("../programa_att_ejemplo.asm");
+    cargar("../entrada.asm");
     for (int i = 1; i <= 3 && esta_ejecutando(); i++) {
         obtener_instruccion_actual(buffer, sizeof(buffer));
         cout << "       Paso " << i << ": " << buffer;
@@ -260,8 +260,8 @@ int main() {
     }
 
     cout << "\n7. CLEANUP FINAL\n";
-    result = limpiar();
-    cout << "   limpiar(): " << (result ? "OK" : "ERROR") << "\n";
+    resultado = limpiar();
+    cout << "   limpiar(): OK\n";
 
     cout << "\n=== RESUMEN API DLL ===\n";
     cout << "inicializar() - Crear simulador\n";
