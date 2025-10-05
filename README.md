@@ -2,14 +2,14 @@
 
 [![Excel VBA](https://img.shields.io/badge/Excel_VBA-100%25-217346?logo=microsoftexcel)](https://github.com/alejandroramirezvallejos/Simulador-de-Arquitectura-x86)
 [![Architecture](https://img.shields.io/badge/Architecture-Von_Neumann-blue)](https://github.com/alejandroramirezvallejos/Simulador-de-Arquitectura-x86)
-[![License](https://img.shields.io/badge/License-Educational-orange)](https://github.com/alejandroramirezvallejos/Simulador-de-Arquitectura-x86)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-orange.svg)](https://github.com/alejandroramirezvallejos/Simulador-de-Arquitectura-x86)
 [![Status](https://img.shields.io/badge/Status-Complete-success)](https://github.com/alejandroramirezvallejos/Simulador-de-Arquitectura-x86)
 
 ---
 
 ## 📋 Descripción General
 
-Simulador interactivo de arquitectura x86 desarrollado íntegramente en **Excel con VBA** para fines educativos. Esta herramienta permite visualizar y comprender el funcionamiento interno de un procesador moderno mediante la ejecución de código ensamblador en sintaxis AT&T, proporcionando una representación gráfica detallada del flujo de datos y control a través de un pipeline de cinco etapas.
+Simulador interactivo de arquitectura x86 desarrollado en **Excel con VBA**. Esta herramienta permite visualizar y comprender el funcionamiento interno de un procesador moderno mediante la ejecución de código ensamblador en sintaxis AT&T, proporcionando una representación gráfica detallada del flujo de datos y control a través de un pipeline de cinco etapas.
 
 El simulador implementa una **arquitectura Von Neumann**, donde instrucciones y datos comparten el mismo espacio de memoria, facilitando la comprensión de conceptos fundamentales de arquitectura de computadoras mediante visualización interactiva y simulación paso a paso.
 
@@ -22,7 +22,6 @@ El simulador implementa una **arquitectura Von Neumann**, donde instrucciones y 
 - 1.1 [Descripción General](#11-descripción-general)
 - 1.2 [Objetivos del Proyecto](#12-objetivos-del-proyecto)
 - 1.3 [Características Principales](#13-características-principales)
-- 1.4 [Público Objetivo](#14-público-objetivo)
 
 ### **2. [Fundamentos Teóricos](#-fundamentos-teóricos)**
 
@@ -192,7 +191,7 @@ El simulador implementa una **arquitectura Von Neumann**, donde instrucciones y 
 
 ### 1.1 Descripción General
 
-El Simulador de Arquitectura x86 es una herramienta educativa desarrollada completamente en **Microsoft Excel con Visual Basic for Applications (VBA)**. Su objetivo principal es proporcionar una plataforma visual e interactiva para el aprendizaje de conceptos fundamentales de arquitectura de computadoras, específicamente la arquitectura x86-64.
+El Simulador de Arquitectura x86 es una herramienta desarrollada completamente en **Microsoft Excel con Visual Basic for Applications (VBA)**. Su objetivo principal es proporcionar una plataforma visual e interactiva para el aprendizaje de conceptos fundamentales de arquitectura de computadoras, específicamente la arquitectura x86-64.
 
 El simulador permite ejecutar código ensamblador en sintaxis AT&T, visualizando en tiempo real el comportamiento del procesador a través de sus componentes principales: unidad de control, ALU, registros, memoria, y pipeline de instrucciones.
 
@@ -220,13 +219,6 @@ El simulador permite ejecutar código ensamblador en sintaxis AT&T, visualizando
 | **Visualización**        | Colores dinámicos, resaltado de componentes activos, animaciones         |
 | **Flags**                | ZF, SF, CF, OF actualizados automáticamente                              |
 | **Debugging**            | Ejecución paso a paso con inspección de estado                           |
-
-### 1.4 Público Objetivo
-
-- **Estudiantes** de Arquitectura de Computadoras, Sistemas Operativos, Organización del Computador
-- **Profesores** que buscan herramientas didácticas para sus clases
-- **Investigadores** interesados en análisis de rendimiento de pipelines
-- **Autodidactas** que desean comprender el funcionamiento de un procesador
 
 ---
 
@@ -2793,12 +2785,6 @@ End Sub
 ## 📖 Guía de Uso Detallada
 
 ### 7.1 Requisitos del Sistema
-
-**Hardware Mínimo:**
-
-- Procesador: Intel Core i3 o equivalente
-- RAM: 4 GB
-- Espacio en disco: 50 MB
 
 **Software:**
 
