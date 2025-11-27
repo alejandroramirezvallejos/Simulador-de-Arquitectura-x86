@@ -64,6 +64,9 @@ El simulador implementa una **arquitectura Von Neumann**, donde instrucciones y 
   - 2.9.2 [Beneficios del Pipeline](#292-beneficios-del-pipeline)
   - 2.9.3 [Estructura de 5 Etapas](#293-estructura-de-5-etapas)
   - 2.9.4 [Diseño en el Simulador](#294-diseño-en-el-simulador)
+- 2,10 [Manejo de Interrupciones y Entrada/Salida (I/O)](#210-manejo-de-interrupciones-y-entradasalida-io)
+  - 2.10.1 [Flujo del Proceso de Interrupción de I/O](#2101-flujo-del-proceso-de-interrupción-de-io)
+  - 2.10.2 [Componentes Lógicos y Estructurales](#2102-componentes-lógicos-y-estructurales)
 
 ### **3. [Arquitectura del Simulador](#-arquitectura-del-simulador)**
 
@@ -2290,6 +2293,220 @@ Sub SimularPipelineCPU(rangoInstrucciones As Range, rangoPipeline As Range)
     Loop
 
     MsgBox "Pipeline completado: " & totalInstrucciones & " instrucciones en " & ciclo & " ciclos", vbInformation
+End Sub
+```
+### 2.10 Manejo de Interrupciones y Entrada/Salida (I/O)
+
+Para simular un entorno interactivo y demostrar la gestión de dispositivos periféricos, el simulador incluye un módulo de Entrada/Salida con manejo de interrupciones que opera dentro de la arquitectura Von Neumann implementada. Este módulo introduce un flujo de datos asíncrono que puede interrumpir la ejecución secuencial del pipeline de 5 etapas del CPU.
+
+#### 2.10.1 Flujo del Proceso de Interrupción de I/O
+
+1. Entrada de Usuario (Terminal)  
+   El usuario escribe un comando (ej.: "AYUDA", "LIMPIAR") en la celda de la Terminal.  
+2. Activación del Búfer de Teclado  
+   La entrada se transfiere carácter a carácter al Búfer de Teclado (rango de celdas). Cuando el comando está completo se genera una solicitud de interrupción y se añade a la cola de ejecución.  
+3. Cola de Ejecución y Detección por la UC  
+   La solicitud se posiciona en la cola de interrupciones/procesos. La Unidad de Control detecta la interrupción pendiente y pausa temporalmente el pipeline.  
+4. Servicio de Interrupción (ISR)  
+   El CPU ejecuta la rutina ISR correspondiente: lee y vacía el Búfer de Teclado, procesa el comando, genera la salida y remueve la solicitud de la cola.  
+5. Generación de Salida y Búfer de Pantalla  
+   El ISR produce la respuesta y la agrega al Búfer de Pantalla (líneas independientes).  
+6. Visualización  
+   El contenido del Búfer de Pantalla se muestra en el área visual (pantalla) de la interfaz.
+
+#### 2.10.2 Componentes Lógicos y Estructurales
+
+- Búfer de Teclado: almacenamiento temporal de la entrada (rango de celdas: BUFFER_TECLADO_FILA_INICIO … BUFFER_TECLADO_MAX).  
+- Búfer de Pantalla: almacenamiento temporal de la salida (rango: BUFFER_PANTALLA_FILA … BUFFER_PANTALLA_MAX).  
+- Terminal / Pantalla: área visual en Hoja2 (PANTALLA_INICIO_FILA … PANTALLA_FIN_FILA) que muestra salida y acepta entrada.  
+- Cola de Ejecución: estructura (colaEjecucion) que prioriza interrupciones de I/O sobre ejecución normal.
+
+A continuación incluimos el código VBA reducido (ejecutable) que documenta el comportamiento y que puedes copiar/pegar en la documentación como ejemplo operativo. El código completo para integrar en el proyecto VBA (módulo) también se incluye a continuación y explica dónde pegarlo.
+
+```vb
+' Módulo VBA sugerido: ModuloIO
+' Copia este bloque y pégalo en un módulo nuevo (Insert > Module) llamado "ModuloIO"
+' NOTA: ajusta nombres de hojas/rangos (Hoja2, CELDA_TERMINAL_INPUT, etc.) según tu workbook.
+
+Option Explicit
+
+' ---- Configuración de buffers (ajustar según tu hoja) ----
+Public Const BUFFER_TECLADO_FILA_INICIO As Long = 20
+Public Const BUFFER_TECLADO_COL As Long = 2
+Public Const BUFFER_TECLADO_MAX As Long = 50
+
+Public Const BUFFER_PANTALLA_FILA As Long = 60
+Public Const BUFFER_PANTALLA_COL As Long = 2
+Public Const BUFFER_PANTALLA_MAX As Long = 120
+
+' ---- Estructuras de control ----
+Public colaEjecucion As Collection
+Public INTERRUPCION_PENDING As Boolean
+
+' ---------------- Inicialización ----------------
+Sub InicializarIO()
+    If colaEjecucion Is Nothing Then Set colaEjecucion = New Collection
+    Do While colaEjecucion.Count > 0
+        colaEjecucion.Remove 1
+    Loop
+    INTERRUPCION_PENDING = False
+End Sub
+
+' ---------------- Pausa pequeña (ms) ----------------
+Private Sub Pause(ms As Double)
+    Dim t As Double
+    t = Timer
+    Do While Timer < t + ms / 1000
+        DoEvents
+        ' Manejar posible wrap-around de Timer (al pasar medianoche)
+        If Timer < t Then Exit Do
+    Loop
+End Sub
+
+' ---------------- Agregar texto al buffer de teclado (char a char) ----------------
+Sub AgregarABufferTeclado(comando As String)
+    Dim ws As Worksheet: Set ws = ThisWorkbook.Worksheets("Hoja2")
+    Dim i As Long, fila As Long
+    fila = BUFFER_TECLADO_FILA_INICIO
+
+    ' Escribir carácter a carácter (simula transferencia por bus)
+    For i = 1 To Len(comando)
+        If fila > BUFFER_TECLADO_MAX Then Exit For
+        ws.Cells(fila, BUFFER_TECLADO_COL).Value = Mid$(comando, i, 1)
+        fila = fila + 1
+        Pause 30   ' 30 ms de "retardo" simulado; ajustar si desea más lento/rápido
+    Next i
+
+    ' Añadir una marca de fin de comando (opcional)
+    If fila <= BUFFER_TECLADO_MAX Then ws.Cells(fila, BUFFER_TECLADO_COL).Value = vbNullString
+
+    ' Generar solicitud de interrupción (encolar)
+    If colaEjecucion Is Nothing Then Set colaEjecucion = New Collection
+    colaEjecucion.Add "IO_INTERRUPT"
+    INTERRUPCION_PENDING = True
+End Sub
+
+' ---------------- Botón "Enviar" en la UI - ejemplo ----------------
+Sub BotonEnviar()
+    Dim ws As Worksheet: Set ws = ThisWorkbook.Worksheets("Hoja2")
+    Dim cmd As String
+    ' CELDA_TERMINAL_INPUT debe ser un nombre de rango o celda donde el usuario teclea
+    cmd = Trim$(CStr(ws.Range("CELDA_TERMINAL_INPUT").Value))
+    If cmd <> "" Then
+        Call AgregarABufferTeclado(cmd)
+        ' Opcional: limpiar entrada
+        ws.Range("CELDA_TERMINAL_INPUT").Value = ""
+        ' Notificar a UC (si la UC revisa INTERRUPCION_PENDING, detectará la interrupción)
+    End If
+End Sub
+
+' ---------------- Procesador de cola (invocado por UC o timer) ----------------
+Sub ProcesarColaIO()
+    If colaEjecucion Is Nothing Then Exit Sub
+    If colaEjecucion.Count = 0 Then Exit Sub
+
+    ' Priorizar: tomar el primer elemento
+    Dim proceso As String
+    proceso = CStr(colaEjecucion(1))
+
+    If proceso = "IO_INTERRUPT" Then
+        ' Simular que la UC pausa el pipeline y atiende ISR
+        ISR_HandleIO
+    End If
+End Sub
+
+' ---------------- ISR (Interrupt Service Routine) ----------------
+Sub ISR_HandleIO()
+    Dim cmd As String
+    cmd = LeerBufferTeclado()
+
+    If cmd = "" Then
+        MostrarEnPantalla "ISR: buffer vacío"
+    Else
+        Select Case UCase$(cmd)
+            Case "AYUDA"
+                MostrarEnPantalla "AYUDA: comandos disponibles -> AYUDA, LIMPIAR, INFO"
+            Case "LIMPIAR"
+                LimpiarPantalla
+                MostrarEnPantalla "Pantalla limpiada."
+            Case Else
+                MostrarEnPantalla "Comando recibido: " & cmd
+        End Select
+    End If
+
+    ' Remover proceso de la cola al finalizar el ISR
+    RemoverProcesoDeCola
+End Sub
+
+' ---------------- Leer y vaciar el buffer de teclado (retorna cadena completa) ----------------
+Function LeerBufferTeclado() As String
+    Dim ws As Worksheet: Set ws = ThisWorkbook.Worksheets("Hoja2")
+    Dim fila As Long: fila = BUFFER_TECLADO_FILA_INICIO
+    Dim s As String: s = ""
+
+    Do While fila <= BUFFER_TECLADO_MAX
+        Dim ch As Variant: ch = ws.Cells(fila, BUFFER_TECLADO_COL).Value
+        If IsEmpty(ch) Or ch = "" Then Exit Do
+        s = s & CStr(ch)
+        ' Vaciar celda (simula consumo)
+        ws.Cells(fila, BUFFER_TECLADO_COL).Value = ""
+        fila = fila + 1
+    Loop
+
+    LeerBufferTeclado = s
+End Function
+
+' ---------------- Mostrar mensaje en pantalla (agrega al buffer de pantalla) ----------------
+Sub MostrarEnPantalla(msg As String)
+    Dim ws As Worksheet: Set ws = ThisWorkbook.Worksheets("Hoja2")
+    Dim fila As Long: fila = BUFFER_PANTALLA_FILA
+
+    ' Buscar la siguiente línea libre en el buffer de pantalla
+    Do While fila <= BUFFER_PANTALLA_MAX
+        If Trim$(CStr(ws.Cells(fila, BUFFER_PANTALLA_COL).Value)) = "" Then
+            ws.Cells(fila, BUFFER_PANTALLA_COL).Value = msg
+            Exit Do
+        End If
+        fila = fila + 1
+    Loop
+
+    ' Si se desea, también actualizar un rango visible llamado PANTALLA (render)
+    Call RenderizarPantalla
+End Sub
+
+' ---------------- Renderizar pantalla desde buffer (lee secuencialmente y muestra) ----------------
+Sub RenderizarPantalla()
+    Dim ws As Worksheet: Set ws = ThisWorkbook.Worksheets("Hoja2")
+    Dim fila As Long: fila = BUFFER_PANTALLA_FILA
+    Dim outRow As Long: outRow = 5   ' Ejemplo: fila superior de la zona visible de la pantalla
+
+    ' Limpiar zona visible (opcional)
+    ws.Range(ws.Cells(outRow, BUFFER_PANTALLA_COL), ws.Cells(outRow + 20, BUFFER_PANTALLA_COL)).ClearContents
+
+    Dim i As Long: i = 0
+    Do While fila <= BUFFER_PANTALLA_MAX And i < 21
+        Dim lineText As Variant: lineText = ws.Cells(fila, BUFFER_PANTALLA_COL).Value
+        If Not IsEmpty(lineText) And Trim$(CStr(lineText)) <> "" Then
+            ws.Cells(outRow + i, BUFFER_PANTALLA_COL).Value = lineText
+            i = i + 1
+        End If
+        fila = fila + 1
+    Loop
+End Sub
+
+' ---------------- Limpiar buffer & pantalla ----------------
+Sub LimpiarPantalla()
+    Dim ws As Worksheet: Set ws = ThisWorkbook.Worksheets("Hoja2")
+    ws.Range(ws.Cells(BUFFER_PANTALLA_FILA, BUFFER_PANTALLA_COL), ws.Cells(BUFFER_PANTALLA_MAX, BUFFER_PANTALLA_COL)).ClearContents
+    Call RenderizarPantalla
+End Sub
+
+' ---------------- Remover primer proceso de la cola ----------------
+Sub RemoverProcesoDeCola()
+    If colaEjecucion Is Nothing Then Exit Sub
+    If colaEjecucion.Count = 0 Then Exit Sub
+    colaEjecucion.Remove 1
+    INTERRUPCION_PENDING = (colaEjecucion.Count > 0)
 End Sub
 ```
 
