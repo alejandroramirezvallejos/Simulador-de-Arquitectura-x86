@@ -12,7 +12,7 @@ Simulador interactivo de arquitectura x86 desarrollado en **Excel con VBA**. Est
 
 El simulador implementa una **arquitectura Von Neumann**, donde instrucciones y datos comparten el mismo espacio de memoria, facilitando la comprensión de conceptos fundamentales de arquitectura de computadoras.
 
-**Repositorio:** [https://github.com/alejandroramirezucb/Simulador-de-Arquitectura-x86](https://github. com/alejandroramirezucb/Simulador-de-Arquitectura-x86)
+**Repositorio:** [https://github.com/alejandroramirezucb/Simulador-de-Arquitectura-x86](https://github.com/alejandroramirezucb/Simulador-de-Arquitectura-x86)
 
 ---
 
