@@ -77,14 +77,14 @@ El simulador implementa una **arquitectura Von Neumann**, donde instrucciones y 
 - 8.1 [Ejemplo Completo](#81-ejemplo-completo-suma-de-dos-números)
 - 8.2 [Tabla Pipeline con Hazards](#82-tabla-pipeline-con-hazards)
 
-### **9. [Referencias](#-referencias)**
+### **9. [Referencias](#referencias)**
 
 ### **10. [Apéndices](#-apéndices)**
 
 - A. [Convenciones de Nomenclatura](#apéndice-a-convenciones-de-nomenclatura)
 - B. [Conjunto de Instrucciones](#apéndice-b-conjunto-completo-de-instrucciones-soportadas)
 
-### **111. [Licencia y Autores](#-licencia-y-autores)**
+### **11. [Licencia y Autores](#-licencia-y-autores)**
 
 ---
 
