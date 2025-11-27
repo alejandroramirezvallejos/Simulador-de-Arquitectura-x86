@@ -1,6 +1,5 @@
 # Simulador de Arquitectura x86
 
-[![Excel VBA](https://img.shields. io/badge/Excel_VBA-100%25-217346? logo=microsoftexcel)](https://github.com/alejandroramirezucb/Simulador-de-Arquitectura-x86)
 [![Architecture](https://img.shields.io/badge/Architecture-Von_Neumann-blue)](https://github.com/alejandroramirezucb/Simulador-de-Arquitectura-x86)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-orange.svg)](https://github.com/alejandroramirezucb/Simulador-de-Arquitectura-x86)
 [![Status](https://img.shields.io/badge/Status-Complete-success)](https://github.com/alejandroramirezucb/Simulador-de-Arquitectura-x86)
