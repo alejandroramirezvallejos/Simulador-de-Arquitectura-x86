@@ -64,7 +64,7 @@ El simulador implementa una **arquitectura Von Neumann**, donde instrucciones y 
   - 2.9.2 [Beneficios del Pipeline](#292-beneficios-del-pipeline)
   - 2.9.3 [Estructura de 5 Etapas](#293-estructura-de-5-etapas)
   - 2.9.4 [Diseño en el Simulador](#294-diseño-en-el-simulador)
-- 2,10 [Manejo de Interrupciones y Entrada/Salida (I/O)](#210-manejo-de-interrupciones-y-entradasalida-io)
+- 2.10 [Manejo de Interrupciones y Entrada/Salida (I/O)](#210-manejo-de-interrupciones-y-entradasalida-io)
   - 2.10.1 [Flujo del Proceso de Interrupción de I/O](#2101-flujo-del-proceso-de-interrupción-de-io)
   - 2.10.2 [Componentes Lógicos y Estructurales](#2102-componentes-lógicos-y-estructurales)
 
