@@ -101,7 +101,7 @@ El simulador permite ejecutar código ensamblador en sintaxis AT&T, visualizando
 1. **Educación Visual**: Proporcionar una representación gráfica del funcionamiento interno de un procesador
 2. **Comprensión del Pipeline**: Facilitar el entendimiento de la ejecución superpuesta de instrucciones
 3. **Análisis de Hazards**: Mostrar las dependencias entre instrucciones y sus soluciones
-4. **Gestión de Memoria**: Ilustrar la jerarquía de memoria (registros, caché, RAM, memoria virtual)
+4. **Gestión de Memoria**: Ilustrar la jerarquía de memoria (registros, caché, RAM, memoria virtual , Tabla del programa)
 5. **Accesibilidad**: Utilizar una plataforma familiar (Excel) para reducir la curva de aprendizaje
 
 ### 1.3 Características Principales
